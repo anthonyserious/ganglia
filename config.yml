@@ -1,0 +1,6 @@
+# Listening port
+port: 8181
+
+# Logs directory
+logpath: "./logs"
+

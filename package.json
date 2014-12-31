@@ -1,0 +1,30 @@
+{
+  "name": "ganglia",
+  "description": "RESTful service wrapping brain.js functions",
+  "version": "0.1.0",
+  "author": {
+    "name": "Anthony Schneider"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/anthonyserious/ganglia.git"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "express": "~4.6",
+    "js-yaml": "~3.2",
+    "body-parser": "~1.10",
+    "brain": "~0.7"
+  },
+  "devDependencies": {
+    "mocha": "~2.1"
+  },
+  "scripts": {
+    "prepublish": "npm prune",
+    "test": "./node_modules/.bin/mocha ./tests/tests.js"
+  },
+  "bugs": {
+    "url": "https://github.com/anthonyserious/ganglia/issues"
+  }
+}
+
