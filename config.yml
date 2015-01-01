@@ -1,6 +1,11 @@
 # Listening port
-port: 8181
+port: 8182
 
 # Logs directory
 logpath: "./logs"
+
+# MongoDB for persistence
+mongoDBUrl: "mongodb://localhost:27017/parietal"
+mongoDBCollection: "networks"
+
 

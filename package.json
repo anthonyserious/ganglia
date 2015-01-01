@@ -1,5 +1,5 @@
 {
-  "name": "ganglia",
+  "name": "parietal",
   "description": "RESTful service wrapping brain.js functions",
   "version": "0.1.0",
   "author": {
@@ -7,24 +7,29 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/anthonyserious/ganglia.git"
+    "url": "git://github.com/anthonyserious/parietal.git"
   },
   "license": "MIT",
   "dependencies": {
-    "express": "~4.6",
-    "js-yaml": "~3.2",
-    "body-parser": "~1.10",
-    "brain": "~0.7"
+    "assert": "1.3.x",
+    "body-parser": "1.10.x",
+    "brain": "0.7.x",
+    "express": "4.6.x",
+    "js-yaml": "3.2.x",
+    "mongodb": "1.4.x"
   },
   "devDependencies": {
-    "mocha": "~2.1"
+    "mocha": "2.1.x",
+    "superagent": "0.21.x",
+    "expect.js": "0.3.x"
   },
   "scripts": {
     "prepublish": "npm prune",
-    "test": "./node_modules/.bin/mocha ./tests/tests.js"
+    "test": "./node_modules/.bin/mocha ./test/tests.js",
+    "start": "./index.js &",
+    "stop": "kill -TERM `cat logs/parietal.pid`"
   },
   "bugs": {
-    "url": "https://github.com/anthonyserious/ganglia/issues"
+    "url": "https://github.com/anthonyserious/parietal/issues"
   }
 }
-
