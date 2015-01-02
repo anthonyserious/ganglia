@@ -16,8 +16,8 @@ Parietal provides basic CRUD operations:
 * POST `/api/networks/ID/train` - train the network "ID" with the supplied JSON.  Expected format is (with "params" optional): `{ "params":{...}, "data":{"input":..., "output":...}}`.  The format is aligned with the objects described in the [brain.js][brain] documentation.
 * POST `/api/networks/ID/run` - run the network "ID" with the supplied JSON.  Expected format is `{ "data":...}`.  The format is aligned with the objects described in the [brain.js][brain] documentation.
 
-## Example
-Using the XOR example described in the [brain.js][brain] repository:
+## Example - XOR
+Using the XOR example (./examples/xor.sh) described in the [brain.js][brain] repository:
 ```bash
 $ curl -XPOST -H "Content-Type: application/json" -d '{"data":[{"input": [0, 0], "output": [0]}, {"input": [0, 1], "output": [1]}, {"input": [1, 0], "output": [1]}, {"input": [1, 1], "output": [0]}]}' http://localhost:8181/api/networks/xor/train
 Training: 'xor'
@@ -30,4 +30,30 @@ $ curl -XPOST -H "Content-Type: application/json" -d '{"data":[0,1]}' http://loc
 [0.9280835524564033]
 $
 ```
+
+## Example - recognition of cross patterns
+Here we create a network to recognize cross patterns on a 5-by-5 grid.  Network inputs are 5-by-5 grids as row-major, 25 element arrays.  A cross is a pattern where there is a 1 bordered on all sides by 1s.  You can run `examples/cross.sh`, which should have similar output:
+```bash
+$ ./examples/cross.sh 
+Creating cross network
+{"status":"created"}
+Creating/training cross network
+{"error":0.0049405190899400805,"iterations":164}
+Running with a cross
+[0.9504015309710259]
+Running with a cross
+[0.7345939958206359]
+Running with a cross
+[0.9041989995022514]
+Running with a cross
+[0.894384797891054]
+Running with a non-cross
+[0.05211943280258072]
+Running with a non-cross
+[0.11822416731377493]
+Running with a non-cross
+[0.3003437370383277]
+$
+```
+
 [brain]: https://github.com/harthur/brain
