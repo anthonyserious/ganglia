@@ -10,8 +10,8 @@ var mongo = require('mongodb').MongoClient;
 var assert = require("assert");
 
 // Local
-var pidManager = require('./pidManager.js');
-var networkManager = require('./networkManager.js');
+var pidManager = require('./lib/pidManager.js');
+var networkManager = require('./lib/networkManager.js');
 
 //  Load config
 var config = {};
@@ -114,9 +114,7 @@ app.use(function(err, req, res, next) {
     res.status(500).send("An error has occurred.  My bad.");
 });
 
-app.use('/', function(request, response) {
-  response.status(200).send("<center><h1>Parietal neural network server.</h1><p><a href='https://github.com/anthonyserious/parietal'>Source code on github.</a></center>");
-});
+app.use(express.static(__dirname + '/public'));
 
 server.listen(config.port || 8100);
 
