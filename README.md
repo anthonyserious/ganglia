@@ -5,7 +5,7 @@ Parietal is a Node.js app which exposes a RESTful API for functions from the nif
 To run Parietal, do `git clone https://github.com/anthonyserious/parietal.git` and `cd parietal`.  Adjust variables as necessary in `config.yml`, then run `npm start`.  To stop the server run `npm stop`.
 
 ## Testing
-To test, run `npm test`.  Note that some tests assume an empty MongoDB collection, so if you test with an already populated collection then some tests will fail.
+To test, run `npm test`.
 
 ## Methods
 Parietal provides basic CRUD operations:
