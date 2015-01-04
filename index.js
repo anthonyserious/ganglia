@@ -7,36 +7,23 @@ var yaml = require('js-yaml');
 var bodyParser = require('body-parser');
 var server = require('http').Server(app);
 var mongo = require('mongodb').MongoClient;
-var assert = require("assert");
+var assert = require('assert');
+var bunyan = require('bunyan');
 
 // Local
-var pidManager = require('./lib/pidManager.js');
 var networkManager = require('./lib/networkManager.js');
+
+// Set up logger
+var logger = bunyan.createLogger({name:'parietal'});
 
 //  Load config
 var config = {};
 try {
   config = yaml.safeLoad(fs.readFileSync('./config.yml', 'utf8'));
 } catch (e) {
-  console.log(e);
+  logger.error(e);
   process.exit(1);
 }
-
-//  Set up log path
-if (!fs.existsSync(config.logpath)) {
-  fs.mkdirSync(config.logpath);
-}
-pidManager.createPidFile(config.logpath+"/parietal.pid", true);
-
-// Signal handler.  Remove pid file and exit cleanly.
-function exitHandler() {
-  //throw("Exit handler called");
-  pidManager.removePidFile();
-  process.exit(0);
-}
-process.on('SIGTERM', exitHandler);
-process.on('SIGINT', exitHandler);
-process.on('exit', exitHandler);
 
 // parse JSON POST requests
 app.use(bodyParser.json());
@@ -49,7 +36,7 @@ mongo.connect(config.mongoDBUrl, function(err, database) {
     db.collection(config.mongoDBCollection).find({}, {}).toArray(function(errorFind, items) {
       assert.equal(null, err);
       networkManager.init(items, function(err) {
-        console.log(err);
+        logger.error(err);
       });
     });
 });

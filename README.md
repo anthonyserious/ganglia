@@ -2,7 +2,7 @@
 Parietal is a Node.js app which exposes a RESTful API for functions from the nifty [brain.js][brain] module.  Parietal allows you to host multiple different neural networks, with persistence in mongodb.  File-based persistence will be added "soon".
 
 ## Running
-To run Parietal, do `git clone https://github.com/anthonyserious/parietal.git` and `cd parietal`.  Adjust variables as necessary in `config.yml`, then run `npm start`.  To stop the server run `npm stop`.
+To run Parietal, do `git clone https://github.com/anthonyserious/parietal.git` and `cd parietal`.  Adjust variables as necessary in `config.yml`, then run `node ./index.js`.
 
 ## Testing
 To test, run `npm test`.
