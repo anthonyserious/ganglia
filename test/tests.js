@@ -17,23 +17,26 @@ console.log("Using baseUrl "+baseUrl);
 //  This will be used for extracting an already-trained network and then creating it again.
 var savedJson = {};
 
+// Need a unique network name to test with.
+var networkName = "xor-"+process.pid;
+
 describe('Parietal REST API server', function() {
 
-  //  First test is on a newly initialized server.  The list of networks should be empty.
-  it('get empty list of networks', function(done){
+  //  First test is on a newly initialized server.  The list of networks should no contain networkName.
+  it('get list of networks, which should not contain our network name', function(done){
     superagent.get(baseUrl+'/api/networks')
       .end(function(e,res){
         //console.log(res.body);
         expect(e).to.eql(null);
         expect(typeof res.body).to.eql("object");
-        expect(res.body).to.eql([]);
+        expect(res.body).not.to.contain(networkName);
         done();
       });
   });
 
   //  Call "train" for a new network called "xor".  This should automatically create and train the network.
   it('post object', function(done){
-    superagent.post(baseUrl+"/api/networks/xor/train")
+    superagent.post(baseUrl+"/api/networks/"+networkName+"/train")
       .send({data:[{input: [0, 0], output: [0]}, {input: [0, 1], output: [1]}, {input: [1, 0], output: [1]}, {input: [1, 1], output: [0]}]})
       .end(function(e,res){
         expect(typeof res.body).to.eql("object");
@@ -45,19 +48,19 @@ describe('Parietal REST API server', function() {
 
   //  Query list of networks again.  Should contain only "xor" now.
   it('get list of networks with only xor', function(done){
-    superagent.get(baseUrl+'/api/networks')
+    superagent.get(baseUrl+"/api/networks")
       .end(function(e,res){
         //console.log(res.body);
         expect(e).to.eql(null);
         expect(typeof res.body).to.eql("object");
-        expect(res.body).to.eql(["xor"]);
+        expect(res.body).to.contain(networkName);
         done();
       });
   });
 
   // Test with [0, 1].  Use a very forgiving threshold since we're not testing brain.js here but rather the API.
   it('Run XOR network on [0, 1]', function(done){
-    superagent.post(baseUrl+"/api/networks/xor/run")
+    superagent.post(baseUrl+"/api/networks/"+networkName+"/run")
       .send({data:[0,1]})
       .end(function(e,res){
         expect(e).to.eql(null);
@@ -70,7 +73,7 @@ describe('Parietal REST API server', function() {
   
   // Test with [0, 0].  Use a very forgiving threshold since we're not testing brain.js here but rather the API.
   it('Run XOR network on [0, 0]', function(done){
-    superagent.post(baseUrl+"/api/networks/xor/run")
+    superagent.post(baseUrl+"/api/networks/"+networkName+"/run")
       .send({data:[0,0]})
       .end(function(e,res){
         expect(e).to.eql(null);
@@ -83,7 +86,7 @@ describe('Parietal REST API server', function() {
 
   //  Get JSON of already-trained network
   it('get stored JSON of trained XOR network', function(done){
-    superagent.get(baseUrl+'/api/networks/xor')
+    superagent.get(baseUrl+"/api/networks/"+networkName)
       .end(function(e,res){
         //console.log(res.body);
         expect(e).to.eql(null);
@@ -97,7 +100,7 @@ describe('Parietal REST API server', function() {
 
   //  Delete the XOR network
   it('Delete the XOR network', function(done){
-    superagent.del(baseUrl+"/api/networks/xor")
+    superagent.del(baseUrl+"/api/networks/"+networkName)
       .end(function(e,res){
         expect(e).to.eql(null);
         expect(typeof res.body).to.eql("object");
@@ -113,14 +116,14 @@ describe('Parietal REST API server', function() {
         //console.log(res.body);
         expect(e).to.eql(null);
         expect(typeof res.body).to.eql("object");
-        expect(res.body).to.eql([]);
+        expect(res.body).not.to.contain(networkName);
         done();
       });
   });
 
   // Create network again from savedJson
   it('Create network from saved JSON', function(done){
-    superagent.post(baseUrl+"/api/networks/xor")
+    superagent.post(baseUrl+"/api/networks/"+networkName)
       .send(savedJson)
       .end(function(e,res){
         //console.log(res.body);
@@ -133,7 +136,7 @@ describe('Parietal REST API server', function() {
 
   // One more test, now with [1, 1].  Use a very forgiving threshold since we're not testing brain.js here but rather the API.
   it('Run XOR network on [1, 1]', function(done){
-    superagent.post(baseUrl+"/api/networks/xor/run")
+    superagent.post(baseUrl+"/api/networks/"+networkName+"/run")
       .send({data:[1,1]})
       .end(function(e,res){
         expect(e).to.eql(null);
@@ -144,8 +147,15 @@ describe('Parietal REST API server', function() {
       });
   });
 
-
-
-
+  //  Delete the XOR network
+  it('Delete the XOR network', function(done){
+    superagent.del(baseUrl+"/api/networks/"+networkName)
+      .end(function(e,res){
+        expect(e).to.eql(null);
+        expect(typeof res.body).to.eql("object");
+        expect(res.body.status).to.be("ok");
+        done();
+      });
+  });
 });
 
