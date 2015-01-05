@@ -30,10 +30,10 @@ app.use(bodyParser.json());
 
 // Initialize MongoDB connection
 var db;
-mongo.connect(config.mongoDBUrl, function(err, database) {
+mongo.connect(config.mongoDB.url, function(err, database) {
     assert.equal(null, err);
     db = database;
-    db.collection(config.mongoDBCollection).find({}, {}).toArray(function(errorFind, items) {
+    db.collection(config.mongoDB.networks).find({}, {}).toArray(function(errorFind, items) {
       assert.equal(null, err);
       networkManager.init(items, function(err) {
         logger.error(err);
@@ -44,7 +44,7 @@ mongo.connect(config.mongoDBUrl, function(err, database) {
 app.post('/api/networks/:id/train', function(request, response) {
   networkManager.train(request.params.id, request.body.data, request.body.params, 
     /* success */ function(res, trainedData) {
-      db.collection(config.mongoDBCollection).update({name:request.params.id}, {name:request.params.id, data:trainedData}, {upsert:true}, function(err) {
+      db.collection(config.mongoDB.networks).update({name:request.params.id}, {name:request.params.id, data:trainedData}, {upsert:true}, function(err) {
         assert.equal(null, err);
         response.send(res); 
       });
@@ -93,14 +93,52 @@ app.get('/api/networks/:id', function(request, response) {
 
 app.delete('/api/networks/:id', function(request, response) {
   networkManager.deleteNetwork(request.params.id);
-  response.send({status:"ok"});
+  db.collection(mongoDB.networks).remove({name:request.params.id}, function(err) {
+    if (err) {
+      response.status(500).send("Error during delete: "+err);
+    } else {
+      response.send({status:"ok"});
+    }
+  });
 });
 
 app.use(function(err, req, res, next) {
     console.error(err.stack);
-    res.status(500).send("An error has occurred.  My bad.");
+    response.status(500).send("An error has occurred.  My bad.");
 });
 
+// Manage training data
+// Requests should be of the form [{input{}, output{}, ...]
+app.post('/api/networks/:id/trainingdata', function(request, response) {
+  var name = request.params.id;
+  var dataArray = request.body;
+  console.log(dataArray);
+  var batch = bulkOperation = db.collection(config.mongoDB.trainingData).initializeUnorderedBulkOp({useLegacyOps:true});
+
+  dataArray.forEach(function(e) {
+    bulkOperation.insert({name:name, data:e});
+  })
+
+  batch.execute(function(err, result) {
+    if(err) { 
+      logger.error(err); 
+      response.status(500).send("Error during bulk operation: "+err);
+    }
+    assert.equal(dataArray.length, result.nInserted);
+    response.send({status:"ok"});
+  });
+});
+
+app.delete('/api/networks/:id', function(request, response) {
+  db.collection(mongoDB.trainingData).remove({name:request.params.id}, function(err) {
+    if (err) {
+      response.status(500).send("Error during delete: "+err);
+    } else {
+      response.send({status:"ok"});
+    }
+  });
+
+});
 app.use(express.static(__dirname + '/public'));
 
 server.listen(config.port || 8100);

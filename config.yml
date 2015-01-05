@@ -5,7 +5,15 @@ port: 8182
 logpath: "./logs"
 
 # MongoDB for persistence
-mongoDBUrl: "mongodb://localhost:27017/parietal"
-mongoDBCollection: "networks"
+mongoDB:
+
+  # URL
+  url: "mongodb://localhost:27017/parietal"
+
+  # Name of collection containing networks
+  networks: "networks"
+
+  # Name of collection containing training data
+  trainingData: "trainingData"
 
 

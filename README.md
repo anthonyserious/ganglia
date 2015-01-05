@@ -12,9 +12,12 @@ Parietal provides basic CRUD operations:
 * GET `/api/networks` - list networks in memory.
 * GET `/api/networks/ID` - dumps JSON representation of a (presumably trained) network.
 * DELETE `/api/networks/ID` - deletes the network named "ID".
-* POST `/api/networks/ID` - creates a network named "ID", by either supplying JSON of a previously trained network or supplying JSON with options for creating a new network.  Note that running /api/train/ID will create a new network if it doesn't already exist, using the default `brain.NeuralNetwork() options`.
-* POST `/api/networks/ID/train` - train the network "ID" with the supplied JSON.  Expected format is (with "params" optional): `{ "params":{...}, "data":{"input":..., "output":...}}`.  The format is aligned with the objects described in the [brain.js][brain] documentation.
+* POST `/api/networks/ID` - creates a network named "ID", by either supplying JSON of a previously trained network or supplying JSON with options for creating a new network.
+* POST `/api/networks/ID/train` - train the network "ID" based on training stored training data. Expected format is: `{ "params":{...}}` according to the parameters format described in the [brain.js][brain] documentation.
 * POST `/api/networks/ID/run` - run the network "ID" with the supplied JSON.  Expected format is `{ "data":...}`.  The format is aligned with the objects described in the [brain.js][brain] documentation.
+* GET `/api/networks/ID/trainingdata` - returns training data for the network named ID.
+* DELETE `/api/networks/ID/trainingdata` - delete training data for the network named ID.
+* POST `/api/networks/ID/trainingdata` - add training data for the network named ID.  Data should be an array input/output data, of the form `[{ "input":{}, "output":{}}, ...]` data.
 
 ## Example - XOR
 Using the XOR example (./examples/xor.sh) described in the [brain.js][brain] repository:
