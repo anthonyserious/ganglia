@@ -29,19 +29,38 @@ describe('Parietal REST API server', function() {
         //console.log(res.body);
         expect(e).to.eql(null);
         expect(typeof res.body).to.eql("object");
-        expect(res.body).not.to.contain(networkName);
+        expect(res.body.result).not.to.contain(networkName);
         done();
       });
   });
 
   //  Call "train" for a new network called "xor".  This should automatically create and train the network.
-  it('post object', function(done){
-    superagent.post(baseUrl+"/api/networks/"+networkName+"/train")
+  it('create network', function(done){
+    superagent.post(baseUrl+"/api/networks/"+networkName)
+      .end(function(e,res){
+        expect(typeof res.body).to.eql("object");
+        done();
+      });
+  });
+
+  //  Call "train" for a new network called "xor".  This should automatically create and train the network.
+  it('add training data', function(done){
+    superagent.post(baseUrl+"/api/networks/"+networkName+"/trainingdata")
       .send({data:[{input: [0, 0], output: [0]}, {input: [0, 1], output: [1]}, {input: [1, 0], output: [1]}, {input: [1, 1], output: [0]}]})
       .end(function(e,res){
         expect(typeof res.body).to.eql("object");
-        expect(res.body.error).to.be.below(0.01);
-        expect(res.body.iterations).to.be.above(1);
+        expect(res.body.status).to.eql("ok");
+        done();
+      });
+  });
+
+  //  Call "train" for a new network called "xor".  This should automatically create and train the network.
+  it('train network', function(done){
+    superagent.post(baseUrl+"/api/networks/"+networkName+"/train")
+      .end(function(e,res){
+        expect(typeof res.body).to.eql("object");
+        expect(res.body.result.error).to.be.below(0.01);
+        expect(res.body.result.iterations).to.be.above(1);
         done();
       });
   });
@@ -53,7 +72,7 @@ describe('Parietal REST API server', function() {
         //console.log(res.body);
         expect(e).to.eql(null);
         expect(typeof res.body).to.eql("object");
-        expect(res.body).to.contain(networkName);
+        expect(res.body.result).to.contain(networkName);
         done();
       });
   });
@@ -64,9 +83,9 @@ describe('Parietal REST API server', function() {
       .send({data:[0,1]})
       .end(function(e,res){
         expect(e).to.eql(null);
-        expect(typeof res.body).to.eql("object");
-        expect(res.body.length).to.be(1);
-        expect(res.body[0]).to.be.above(0.7);
+        expect(typeof res.body.result).to.eql("object");
+        expect(res.body.result.length).to.be(1);
+        expect(res.body.result[0]).to.be.above(0.7);
         done();
       });
   });
@@ -77,9 +96,9 @@ describe('Parietal REST API server', function() {
       .send({data:[0,0]})
       .end(function(e,res){
         expect(e).to.eql(null);
-        expect(typeof res.body).to.eql("object");
-        expect(res.body.length).to.be(1);
-        expect(res.body[0]).to.be.below(0.2);
+        expect(typeof res.body.result).to.eql("object");
+        expect(res.body.result.length).to.be(1);
+        expect(res.body.result[0]).to.be.below(0.2);
         done();
       });
   });
@@ -90,9 +109,9 @@ describe('Parietal REST API server', function() {
       .end(function(e,res){
         //console.log(res.body);
         expect(e).to.eql(null);
-        expect(typeof res.body).to.eql("object");
-        expect ("layers" in res.body).to.eql(true);
-        savedJson = res.body;
+        expect(typeof res.body.result).to.eql("object");
+        expect ("layers" in res.body.result).to.eql(true);
+        savedJson = res.body.result;
         done();
       });
   });
@@ -103,7 +122,6 @@ describe('Parietal REST API server', function() {
     superagent.del(baseUrl+"/api/networks/"+networkName)
       .end(function(e,res){
         expect(e).to.eql(null);
-        expect(typeof res.body).to.eql("object");
         expect(res.body.status).to.be("ok");
         done();
       });
@@ -115,8 +133,8 @@ describe('Parietal REST API server', function() {
       .end(function(e,res){
         //console.log(res.body);
         expect(e).to.eql(null);
-        expect(typeof res.body).to.eql("object");
-        expect(res.body).not.to.contain(networkName);
+        expect(typeof res.body.result).to.eql("object");
+        expect(res.body.result).not.to.contain(networkName);
         done();
       });
   });
@@ -126,10 +144,10 @@ describe('Parietal REST API server', function() {
     superagent.post(baseUrl+"/api/networks/"+networkName)
       .send(savedJson)
       .end(function(e,res){
+        console.log(res.body.status);
         //console.log(res.body);
         expect(e).to.eql(null);
-        expect(typeof res.body).to.eql("object");
-        expect(res.body.layers.length).to.be.above(0);
+        expect(res.body.status).to.eql("ok");
         done();
       });
   });
@@ -140,9 +158,10 @@ describe('Parietal REST API server', function() {
       .send({data:[1,1]})
       .end(function(e,res){
         expect(e).to.eql(null);
-        expect(typeof res.body).to.eql("object");
-        expect(res.body.length).to.be(1);
-        expect(res.body[0]).to.be.below(0.2);
+        console.log(res.body.result);
+        expect(typeof res.body.result).to.eql("object");
+        expect(res.body.result.length).to.be(1);
+        expect(res.body.result[0]).to.be.below(0.2);
         done();
       });
   });

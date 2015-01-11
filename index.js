@@ -125,7 +125,7 @@ app.get('/api/networks/:id', function(request, response) {
 
 app.delete('/api/networks/:id', function(request, response) {
   networkManager.deleteNetwork(request.params.id);
-  db.collection(mongoDB.networks).remove({name:request.params.id}, function(err) {
+  db.collection(config.mongoDB.networks).remove({name:request.params.id}, function(err) {
     if (err) {
       response.status(500).send({status:"error", result:res});
     } else {
@@ -136,7 +136,7 @@ app.delete('/api/networks/:id', function(request, response) {
 
 app.use(function(err, req, res, next) {
     console.error(err.stack);
-    response.status(500).send({status:"error", message:"Internal error occurred.  Sorry."});
+    res.status(500).send({status:"error", message:"Internal error occurred.  Sorry."});
 });
 
 // Manage training data
