@@ -1,5 +1,9 @@
 #!/bin/bash
 
+#
+#  In this example, we add create the network, add trainingdaa, and train it all in one shot.
+#
+
 echo "Creating/training XOR network"
 curl -XPOST -H "Content-Type: application/json" -d '{"data":[{"input": [0, 0], "output": [0]}, {"input": [0, 1], "output": [1]}, {"input": [1, 0], "output": [1]}, {"input": [1, 1], "output": [0]}]}' http://localhost:8182/api/networks/xor/train
 echo

@@ -1,15 +1,13 @@
 #!/bin/bash
 
-#
-#  In this example, we create the network, then call /api/networiks/cross/train with training data, as opposed
-#  to first adding training data (/api/networks/cross/trainingdata), then trainng the network.
-#
-
 echo "Creating cross network"
 curl -XPOST -H "Content-Type: application/json" -d '{"options":{"layers":[25]}}' http://localhost:8182/api/networks/cross
 echo
-echo "Creating/training cross network"
-curl -XPOST -H "Content-Type: application/json" -d @`dirname $0`/cross.json http://localhost:8182/api/networks/cross/train
+echo "Adding training data to cross network"
+curl -XPOST -H "Content-Type: application/json" -d @`dirname $0`/cross.json http://localhost:8182/api/networks/cross/trainingdata
+echo
+echo "Training cross network"
+curl -XPOST -H "Content-Type: application/json" http://localhost:8182/api/networks/cross/train
 echo
 echo "Running with a cross"
 curl -XPOST -H "Content-Type: application/json" -d '{"data":[
