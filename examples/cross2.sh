@@ -1,5 +1,10 @@
 #!/bin/bash
 
+#
+#  In this example, we create the network, then add training data, and then train it before running it.
+#
+
+
 echo "Creating cross network"
 curl -XPOST -H "Content-Type: application/json" -d '{"options":{"layers":[25]}}' http://localhost:8182/api/networks/cross
 echo

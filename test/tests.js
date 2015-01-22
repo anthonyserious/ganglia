@@ -144,7 +144,6 @@ describe('Parietal REST API server', function() {
     superagent.post(baseUrl+"/api/networks/"+networkName)
       .send(savedJson)
       .end(function(e,res){
-        console.log(res.body.status);
         //console.log(res.body);
         expect(e).to.eql(null);
         expect(res.body.status).to.eql("ok");
@@ -158,7 +157,6 @@ describe('Parietal REST API server', function() {
       .send({data:[1,1]})
       .end(function(e,res){
         expect(e).to.eql(null);
-        console.log(res.body.result);
         expect(typeof res.body.result).to.eql("object");
         expect(res.body.result.length).to.be(1);
         expect(res.body.result[0]).to.be.below(0.2);
