@@ -28,27 +28,29 @@ router.delete('/:id/trainingdata', function(req, res) {
   });
 });
 
-router.get('/:_id', function (req, res, next) {
-  log.debug("Requesting network");
-
-  var _id = req.param._id;
-
-  // stringify(false) returns an object instead of an array
-  res.type('json');
-  Network.findOne({ name: _id }).lean().stream().pipe(JSONStream.stringify(false)).pipe(res);
-});
 
 router.post('/:id', function(req, res) {
-  console.log("ascljbasckjbasc");
   log.debug("Creating network");
 
   res.type("json");
   networkManager.create(req.params.id, req.body, 
-    /* success */ function(result) { 
-      res.send({status:"ok", result:result});
+    /* success */ function(result) {
+      if (result) {
+        log.debug("Saving network to database");
+        Network.update({name: req.params.id }, { name: req.params.id, data: result}, { upsert: true }, function(err) {
+          if (err) {
+            res.status(500).send({ status: "error", result: err });
+          } else {
+            res.send({status: "ok", result: result});
+          }
+        })
+      } else {
+        log.debug("New empty network created");
+        res.send({status: "ok", result: "Successfully created"});
+      }
     }, 
-    /* error */ function(res) { 
-      res.status(500).send({status:"error", result:result});
+    /* error */ function(result) { 
+      res.status(500).send({status: "error", result: result});
     });
 });
 
@@ -63,7 +65,7 @@ router.post('/:id/train', function(req, res) {
 
     networkManager.train(req.params.id, req.body.data, req.body.params, 
       /* success */ function(result, trainedData) {
-        Network.update({name: req.param.id }, { upsert: true }, function(err) {
+        Network.update({name: req.params.id }, { name: req.params.id, data: trainedData }, { upsert: true }, function(err) {
           if (err) {
             res.status(500).send({ status: "error", result: err });
           } else {
@@ -78,6 +80,7 @@ router.post('/:id/train', function(req, res) {
                   if (err) {
                     res.status(500).send({ status: "error", result: err });
                   } else {
+
                     res.send({status:"ok", result:result});
                   }
                 });
@@ -114,7 +117,7 @@ router.delete('/:id', function(req, res) {
   networkManager.deleteNetwork(req.params.id);
   
   res.type("json");
-  Network.remove({name: req.param.id}, function(err) {
+  Network.remove({name: req.params.id}, function(err) {
     if (err) {
       res.status(500).send({ status: "error", result: res });
     } else {
@@ -123,15 +126,29 @@ router.delete('/:id', function(req, res) {
   });
 });
 
+router.get('/:id', function (req, res, next) {
+  log.debug("Requesting network");
+
+  res.type('json');
+  Network.findOne({ name: req.params.id }, function(err, result) {
+    if (err) {
+      res.status(500).send({ status: "error", result:res });
+    } else {
+      res.send({ status: "ok", result: result });
+    }
+  })
+});
+
 router.get('/', function(req, res) {
   log.debug("Requesting /");
 
   res.type("json");
   networkManager.list(
-    /* success */ function(res) { 
-      res.send({status:"ok", result:res});
+    /* success */ function(result) { 
+      res.send({ status: "ok", result: result});
     }); 
 });
+
 
 
 module.exports = router;
