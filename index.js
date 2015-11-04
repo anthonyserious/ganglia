@@ -24,7 +24,6 @@ app.use(function(err, req, res, next) {
   log.error(err.stack);
   res.status(500).send({ status: "error", message: "Internal error occurred.  Sorry." });
 });
-console.log("hey");
 
 app.get('/', function(req, res) {
   console.log("ascasc");
