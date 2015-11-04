@@ -10,35 +10,34 @@ To test, run `npm test`.
 # Methods
 Parietal provides the following CRUD operations:
 
-### /api/networks
-* GET `/api/networks` - list networks in memory.
-* GET `/api/networks/ID` - dumps JSON representation of a (presumably trained) network.
-* DELETE `/api/networks/ID` - deletes the network named "ID".
-* POST `/api/networks/ID` - creates a network named "ID", by either supplying JSON of a previously trained network or supplying JSON with options for creating a new network.
+### /api/network
+* GET `/api/network` - list networks in memory.
+* GET `/api/network/ID` - dumps JSON representation of a network.
+* DELETE `/api/network/ID` - deletes the network named "ID".
+* POST `/api/network/ID` - creates a new untrained network named "ID".  Can POST options for creating a new network.
 
-### /api/networks/ID/trainingdata
-* GET `/api/networks/ID/trainingdata` - returns the persisted training data for the network named "ID".
-* POST `/api/networks/ID/trainingdata` - insert training data for the network named "ID".  Training data should be of the form `{ "data":[ { "input": [...], "output": [...]}, ...]}`
-* DELETE `/api/networks/ID/trainingdata` - delete the persisted training data for the network named "ID".
+### /api/network/ID/trainingdata
+* GET `/api/network/ID/trainingdata` - returns the persisted training data for the network named "ID".
+* DELETE `/api/network/ID/trainingdata` - delete the persisted training data for the network named "ID".
 
-### /api/networks/ID/train
-* POST `/api/networks/ID/train` - train the network named "ID" based on stored training data. Expected format is: `{ "params":{...}}` according to the parameters format described in the [brain.js][brain] documentation.
+### /api/network/ID/train
+* POST `/api/network/ID/train` - train the network named "ID" based on provided training data. Expected format is: `{ "data":{...}}` according to the parameters format described in the [brain.js][brain] documentation.
 
-### /api/networks/ID/run
-* POST `/api/networks/ID/run` - run the network "ID" with the supplied JSON.  Expected format is `{ "data":...}`.  The format is aligned with the objects described in the [brain.js][brain] documentation.
+### /api/network/ID/run
+* POST `/api/network/ID/run` - run the network "ID" with the supplied JSON.  Expected format is `{ "data":...}`.  The format is aligned with the objects described in the [brain.js][brain] documentation.
 
 # Examples
 ### XOR
 Using the XOR example (./examples/xor.sh) described in the [brain.js][brain] repository:
 ```bash
-$ curl -XPOST -H "Content-Type: application/json" -d '{"data":[{"input": [0, 0], "output": [0]}, {"input": [0, 1], "output": [1]}, {"input": [1, 0], "output": [1]}, {"input": [1, 1], "output": [0]}]}' http://localhost:8181/api/networks/xor/train
+$ curl -XPOST -H "Content-Type: application/json" -d '{"data":[{"input": [0, 0], "output": [0]}, {"input": [0, 1], "output": [1]}, {"input": [1, 0], "output": [1]}, {"input": [1, 1], "output": [0]}]}' http://localhost:8181/api/network/xor/train
 Training: 'xor'
 [ { input: [ 0, 0 ], output: [ 0 ] },
   { input: [ 0, 1 ], output: [ 1 ] },
   { input: [ 1, 0 ], output: [ 1 ] },
   { input: [ 1, 1 ], output: [ 0 ] } ]
 {"error":0.004998080287413607,"iterations":4776}
-$ curl -XPOST -H "Content-Type: application/json" -d '{"data":[0,1]}' http://localhost:8181/api/networks/xor/run
+$ curl -XPOST -H "Content-Type: application/json" -d '{"data":[0,1]}' http://localhost:8181/api/network/xor/run
 [0.9280835524564033]
 $
 ```
